@@ -1,0 +1,6 @@
+{
+  "venv": "", 
+  "name": "Django Plugin", 
+  "license": "GNU General Public License v3", 
+  "description": "A plugin to better handle django projects in ninja"
+}
