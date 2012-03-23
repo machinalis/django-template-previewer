@@ -68,6 +68,32 @@ class ContextTest(TestCase):
         vars = context.get_context(t)
         self.assertEqual(vars, ["var1", "var2"])
 
+    def test_for(self):
+        t = Template("""
+            {% for item in list %}
+                {{ item.attribute }}
+                {{ outer }}
+            {% endfor %}
+        """)
+        vars = context.get_context(t)
+        self.assertEqual(
+            vars,
+            ["list", "list.0.attribute", "outer"]
+        )
+
+    def test_for_multiple(self):
+        t = Template("""
+            {% for key,value in dictionary.items %}
+                {{ key.attribute }}
+                {{ value }}
+            {% endfor %}
+        """)
+        vars = context.get_context(t)
+        self.assertEqual(
+            vars,
+            ["dictionary.items", "dictionary.items.0.0.attribute", "dictionary.items.0.1"]
+        )
+
     def test_if(self):
         t = Template("""
             {% if not var1 and var2 in var3 %}

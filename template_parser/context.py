@@ -1,6 +1,6 @@
 from django.template.base import Node, TextNode, VariableNode
 from django.template.defaulttags import (
-    CycleNode, FilterNode, FirstOfNode, IfNode, IfChangedNode,
+    CycleNode, FilterNode, FirstOfNode, ForNode, IfNode, IfChangedNode,
     IfEqualNode, LoadNode, NowNode, SpacelessNode, URLNode, WidthRatioNode)
 
 from django.template.loader import get_template
@@ -31,6 +31,7 @@ def _get_node_context(node):
     Return the list of vars used in a node
     """
     result = []
+    renames = []
     # Ignored nodes
     if isinstance(node, _IGNORED_NODES):
         pass
@@ -48,6 +49,16 @@ def _get_node_context(node):
     elif isinstance(node, FirstOfNode):
         for expr in node.vars:
             result += _get_vars(expr)
+    elif isinstance(node, ForNode):
+        result = _get_vars(node.sequence)
+        listvar = node.sequence.var.var.split(".")
+        if len(node.loopvars) == 1:
+            # Simple for
+            renames = [([node.loopvars[0]], listvar + ["0"])]
+        else:
+            # Multi-variable for
+            for i, loopvar in enumerate(node.loopvars):
+                renames += [([loopvar], listvar + ["0", str(i)])]
     elif isinstance(node, IfNode):
         result = _get_expression_vars(node.var)
     elif isinstance(node, IfChangedNode):
@@ -76,15 +87,23 @@ def _get_node_context(node):
     # Templates that introduce aliases to existing vars
     else:
         assert False, "Unrecognized node %s" % type(node)
-        # TODO: for (hard, the iterable, but also the renamings. Also, the forloop stuff?)
+        # TODO: for (hard, the iterable, but also the renamings.)
         # TODO: include (the argument and the loaded template with renamings)
-        # TODO: regroup (the arg, and renamings)
         # TODO: with: renamings
+        # TODO: regroup (the arg, and renamings)
 
     # Go through children nodes. [1:] is to skip self
     for child in node.get_nodes_by_type(Node)[1:]:
         result += _get_node_context(child)
 
+    # Apply renames
+    for src, dest in renames:
+        l = len(src)
+        for i, name in enumerate(result):
+            chain = name.split('.')
+            if chain[:l] == src:
+                chain[:l] = dest
+                result[i] = '.'.join(chain)
     return result
 
 
