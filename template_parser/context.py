@@ -1,10 +1,13 @@
 from django.template.base import Node, TextNode, VariableNode
 from django.template.defaulttags import (
     CycleNode, FilterNode, FirstOfNode, ForNode, IfNode, IfChangedNode,
-    IfEqualNode, LoadNode, NowNode, SpacelessNode, URLNode, WidthRatioNode)
+    IfEqualNode, LoadNode, NowNode, SpacelessNode, URLNode, WidthRatioNode,
+    WithNode)
 
 from django.template.loader import get_template
-from django.template.loader_tags import BlockNode, ExtendsNode
+from django.template.loader_tags import (
+    BlockNode, ExtendsNode, IncludeNode, ConstantIncludeNode
+)
 
 
 def _get_vars(filter_expression):
@@ -49,16 +52,6 @@ def _get_node_context(node):
     elif isinstance(node, FirstOfNode):
         for expr in node.vars:
             result += _get_vars(expr)
-    elif isinstance(node, ForNode):
-        result = _get_vars(node.sequence)
-        listvar = node.sequence.var.var.split(".")
-        if len(node.loopvars) == 1:
-            # Simple for
-            renames = [([node.loopvars[0]], listvar + ["0"])]
-        else:
-            # Multi-variable for
-            for i, loopvar in enumerate(node.loopvars):
-                renames += [([loopvar], listvar + ["0", str(i)])]
     elif isinstance(node, IfNode):
         result = _get_expression_vars(node.var)
     elif isinstance(node, IfChangedNode):
@@ -66,6 +59,12 @@ def _get_node_context(node):
             result += _get_vars(var)
     elif isinstance(node, IfEqualNode):
         result = _get_vars(node.var1) + _get_vars(node.var2)
+    elif isinstance(node, IncludeNode):
+        result = _get_vars(node.template_name)
+        for key, val in node.extra_context.iteritems():
+            result += _get_vars(val)
+        # Note that we ignore the included template and renaming here, because
+        # We can not know which template is the one included
     elif isinstance(node, URLNode):
         if not node.legacy_view_name:  # Django 1.3 new url tag
             result += _get_vars(node.view_name)
@@ -84,13 +83,31 @@ def _get_node_context(node):
             # nothing more we can do
             parent = get_template(node.parent_name)
             result += get_context(parent)
-    # Templates that introduce aliases to existing vars
+    # Tags that introduce aliases to existing vars
+    elif isinstance(node, ForNode):
+        result = _get_vars(node.sequence)
+        listvar = node.sequence.var.var.split(".")
+        if len(node.loopvars) == 1:
+            # Simple for
+            renames = [([node.loopvars[0]], listvar + ["0"])]
+        else:
+            # Multi-variable for
+            for i, loopvar in enumerate(node.loopvars):
+                renames += [([loopvar], listvar + ["0", str(i)])]
+    elif isinstance(node, ConstantIncludeNode):
+        result = get_context(node.template)
+        for key, val in node.extra_context.iteritems():
+            if hasattr(val.var, 'var'):
+                listval = val.var.var.split('.')
+                renames += [([key], listval)]
+    elif isinstance(node, WithNode):
+        for key, val in node.extra_context.iteritems():
+            if hasattr(val.var, 'var'):
+                listval = val.var.var.split('.')
+                renames += [([key], listval)]
     else:
         assert False, "Unrecognized node %s" % type(node)
-        # TODO: for (hard, the iterable, but also the renamings.)
-        # TODO: include (the argument and the loaded template with renamings)
-        # TODO: with: renamings
-        # TODO: regroup (the arg, and renamings)
+    # TODO: regroup (the arg, and renamings)
 
     # Go through children nodes. [1:] is to skip self
     for child in node.get_nodes_by_type(Node)[1:]:

@@ -136,6 +136,16 @@ class ContextTest(TestCase):
             ["var1", "var2", "then_var", "else_var"]
         )
 
+    def test_include_variable(self):
+        t = Template('{% include var with arg=foo %}')
+        vars = context.get_context(t)
+        self.assertEqual(vars, ["var", "foo"])
+
+    def test_include_constant(self):
+        t = Template('{% include "base.html" with var1=foo %}')
+        vars = context.get_context(t)
+        self.assertEqual(vars, ["foo"])
+
     def test_url(self):
         t = Template('{% url view var1 arg=var2 %}')
         vars = context.get_context(t)
@@ -149,6 +159,22 @@ class ContextTest(TestCase):
         t = Template('{% widthratio var1 var2 var3 %}')
         vars = context.get_context(t)
         self.assertEqual(vars, ["var1", "var2", "var3"])
+
+    def test_with(self):
+        t = Template("""
+            {% with var1=foo var2=bar.baz var3="foo" %}
+                {{ var1 }}
+                {{ var2.attribute }}
+                {{ var3 }}
+                {{ foo }}
+            {% endwith %}
+        """)
+        vars = context.get_context(t)
+        # FIXME: in a future version, var3 shouldn't appear in the result
+        self.assertEqual(
+            vars,
+            ["foo", "bar.baz.attribute", "var3", "foo"]
+        )
 
 if __name__ == '__main__':
     main()
