@@ -1,15 +1,11 @@
-from collections import namedtuple
-
 from django.template.base import Node, TextNode, VariableNode
 from django.template.defaulttags import (
-    CycleNode, FilterNode, FirstOfNode, LoadNode, NowNode, SpacelessNode,
-    URLNode, WidthRatioNode)
+    CycleNode, FilterNode, FirstOfNode, IfNode, IfChangedNode, IfEqualNode,
+    LoadNode, NowNode, SpacelessNode, URLNode, WidthRatioNode)
 
 # This import (loader) is required to make the next one (loader_tags) work:
 import django.template.loader
 from django.template.loader_tags import BlockNode
-
-_NodeListWrapper = namedtuple("NodeListWrapper", "nodelist")
 
 
 def _get_vars(filter_expression):
@@ -49,6 +45,13 @@ def _get_node_context(node):
     elif isinstance(node, FirstOfNode):
         for expr in node.vars:
             result += _get_vars(expr)
+    elif isinstance(node, IfNode):
+        result = _get_expression_vars(node.var)
+    elif isinstance(node, IfChangedNode):
+        for var in node._varlist:
+            result += _get_vars(var)
+    elif isinstance(node, IfEqualNode):
+        result = _get_vars(node.var1) + _get_vars(node.var2)
     elif isinstance(node, URLNode):
         if not node.legacy_view_name:  # Django 1.3 new url tag
             result += _get_vars(node.view_name)
@@ -64,10 +67,8 @@ def _get_node_context(node):
         assert False, "Unrecognized node %s" % type(node)
 
         # TODO: extends (hard, it's not just the argument but the template should be loaded too)
-        # TODO: for (hard, the iterable, but also the renamings; then the contents. Also, the forllop stuff)
-        # TODO: if (the expression, and then the contents on each branch
-        # TODO: ifequal, ifnotequal
-        # TODO: include (the argument and the content. also the renamings)
+        # TODO: for (hard, the iterable, but also the renamings. Also, the forloop stuff?)
+        # TODO: include (the argument and the loaded template with renamings)
         # TODO: regroup (the arg, and renamings)
         # TODO: with: renamings
 
@@ -76,6 +77,19 @@ def _get_node_context(node):
         result += _get_node_context(child)
 
     return result
+
+
+def _get_expression_vars(expr):
+    """get variables used on an "if" expression"""
+    result = []
+    if hasattr(expr, 'value') and expr.value:
+        result += _get_vars(expr.value)
+    if hasattr(expr, 'first') and expr.first:
+        result += _get_expression_vars(expr.first)
+    if hasattr(expr, 'second') and expr.second:
+        result += _get_expression_vars(expr.second)
+    return result
+
 
 def get_context(template):
     """

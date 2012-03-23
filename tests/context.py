@@ -50,11 +50,6 @@ class ContextTest(TestCase):
         self.assertEqual(vars, ["var"])
 
     # Tests for specific tags, not covered above
-    def test_block(self):
-        t = Template('{% block foo %}{{ var1 }}{% endblock %}')
-        vars = context.get_context(t)
-        self.assertEqual(vars, ["var1"])
-
     def test_filter(self):
         t = Template('{% filter lower|default:x %}{{ y }}{% endfilter %}')
         vars = context.get_context(t)
@@ -64,6 +59,48 @@ class ContextTest(TestCase):
         t = Template('{% firstof var1 "text" var2 %}')
         vars = context.get_context(t)
         self.assertEqual(vars, ["var1", "var2"])
+
+    def test_if(self):
+        t = Template("""
+            {% if not var1 and var2 in var3 %}
+                {{ then_var }}
+            {% else %}
+                {{ else_var }}
+            {% endif %}
+        """)
+        vars = context.get_context(t)
+        self.assertEqual(
+            vars,
+            ["var1", "var2", "var3", "then_var", "else_var"]
+        )
+
+    def test_ifequal(self):
+        t = Template("""
+            {% ifequal var1 var2 %}
+                {{ then_var }}
+            {% else %}
+                {{ else_var }}
+            {% endifequal %}
+        """)
+        vars = context.get_context(t)
+        self.assertEqual(
+            vars,
+            ["var1", "var2", "then_var", "else_var"]
+        )
+
+    def test_ifchanged(self):
+        t = Template("""
+            {% ifchanged var1 var2 %}
+                {{ then_var }}
+            {% else %}
+                {{ else_var }}
+            {% endifchanged %}
+        """)
+        vars = context.get_context(t)
+        self.assertEqual(
+            vars,
+            ["var1", "var2", "then_var", "else_var"]
+        )
 
     def test_url(self):
         t = Template('{% url view var1 arg=var2 %}')
