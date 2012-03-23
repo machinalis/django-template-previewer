@@ -1,11 +1,14 @@
 from unittest import TestCase, main
+import os.path
+
 from django.template import Template
 from django.conf import settings
 
 from template_parser import context
 
 # Configure django to be able to use the templates outside a django project
-settings.configure()
+BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+settings.configure(TEMPLATE_DIRS=(os.path.join(BASE_PATH, 'templates'),))
 
 
 class ContextTest(TestCase):
@@ -50,6 +53,11 @@ class ContextTest(TestCase):
         self.assertEqual(vars, ["var"])
 
     # Tests for specific tags, not covered above
+    def test_extends(self):
+        t = Template('{% extends "base.html" %}{{ var2 }}')
+        vars = context.get_context(t)
+        self.assertEqual(vars, ["var1", "var2"])
+
     def test_filter(self):
         t = Template('{% filter lower|default:x %}{{ y }}{% endfilter %}')
         vars = context.get_context(t)

@@ -1,11 +1,10 @@
 from django.template.base import Node, TextNode, VariableNode
 from django.template.defaulttags import (
-    CycleNode, FilterNode, FirstOfNode, IfNode, IfChangedNode, IfEqualNode,
-    LoadNode, NowNode, SpacelessNode, URLNode, WidthRatioNode)
+    CycleNode, FilterNode, FirstOfNode, IfNode, IfChangedNode,
+    IfEqualNode, LoadNode, NowNode, SpacelessNode, URLNode, WidthRatioNode)
 
-# This import (loader) is required to make the next one (loader_tags) work:
-import django.template.loader
-from django.template.loader_tags import BlockNode
+from django.template.loader import get_template
+from django.template.loader_tags import BlockNode, ExtendsNode
 
 
 def _get_vars(filter_expression):
@@ -23,13 +22,17 @@ def _get_vars(filter_expression):
     return result
 
 
+# The following are nodes that require no special treatment
+_IGNORED_NODES = (TextNode, BlockNode, NowNode, LoadNode, SpacelessNode)
+
+
 def _get_node_context(node):
     """
     Return the list of vars used in a node
     """
     result = []
     # Ignored nodes
-    if isinstance(node, (TextNode, BlockNode, NowNode, LoadNode, SpacelessNode)):
+    if isinstance(node, _IGNORED_NODES):
         pass
     # Simple variables
     elif isinstance(node, VariableNode):
@@ -63,10 +66,16 @@ def _get_node_context(node):
         result = _get_vars(node.val_expr) + \
                  _get_vars(node.max_expr) + \
                  _get_vars(node.max_width)
+    # Loading of another templates
+    elif isinstance(node, ExtendsNode):
+        if not node.parent_name_expr:
+            # The included template is fixed. If it were dynamic there'd be
+            # nothing more we can do
+            parent = get_template(node.parent_name)
+            result += get_context(parent)
+    # Templates that introduce aliases to existing vars
     else:
         assert False, "Unrecognized node %s" % type(node)
-
-        # TODO: extends (hard, it's not just the argument but the template should be loaded too)
         # TODO: for (hard, the iterable, but also the renamings. Also, the forloop stuff?)
         # TODO: include (the argument and the loaded template with renamings)
         # TODO: regroup (the arg, and renamings)
@@ -113,3 +122,5 @@ def get_context(template):
         result += _get_node_context(node)
 
     return result
+
+
