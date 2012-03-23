@@ -41,13 +41,25 @@ class ContextTest(TestCase):
         self.assertEqual(vars, ["var1", "var2"])
 
     def test_block_tag(self):
-        t = Template(
-            '{% spaceless %}This text contains a {{ var }} inside {% endspaceless %}'
-        )
+        t = Template("""
+            {% spaceless %}
+                This text contains a {{ var }} inside
+            {% endspaceless %}
+        """)
         vars = context.get_context(t)
         self.assertEqual(vars, ["var"])
 
     # Tests for specific tags, not covered above
+    def test_block(self):
+        t = Template('{% block foo %}{{ var1 }}{% endblock %}')
+        vars = context.get_context(t)
+        self.assertEqual(vars, ["var1"])
+
+    def test_filter(self):
+        t = Template('{% filter lower|default:x %}{{ y }}{% endfilter %}')
+        vars = context.get_context(t)
+        self.assertEqual(vars, ["x", "y"])
+
     def test_firstof(self):
         t = Template('{% firstof var1 "text" var2 %}')
         vars = context.get_context(t)
