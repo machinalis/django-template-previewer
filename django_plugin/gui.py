@@ -13,15 +13,21 @@ from ninja_ide.core.plugin_interfaces import IProjectTypeHandler
 from ninja_ide.core.plugin_interfaces import implements
 from ninja_ide.core.file_manager import belongs_to_folder
 
+from template_parser.context import get_context
+
 from copy import deepcopy
 from collections import namedtuple
 import re
+
+from django.template import Template
+from django.conf import settings
 
 logger = logging.getLogger('ninja-django-plugin.django_plugin.gui')
 logging.basicConfig()
 logger.setLevel(logging.DEBUG)
 DEBUG = logger.debug
 
+settings.configure(TEMPLATE_DIRS=tuple())
 Node = namedtuple('Node', ['value', 'children'])
 TEMPLATE_RE = re.compile("\{\{.+?\}\}")
 PROJECT_TYPE = "Django App"
@@ -36,7 +42,8 @@ class DjangoContextItem(object):
 
 
 def parse_django_template(text):
-    return ["foo", "foo.bar", "baz", "baz.0"]
+    template = Template(text)
+    return get_context(template)
 
 
 class DjangoContext(object):
@@ -204,7 +211,7 @@ class DjangoProjectType(object):
         """"
         Returns a iterable of QMenu
         """
-        pass
+        return tuple()
 
 
 class DjangoPluginMain(plugin.Plugin):
@@ -233,7 +240,7 @@ class DjangoPluginMain(plugin.Plugin):
 
     def _is_template(self, fileName):
         fileName = unicode(fileName)
-        if self._is_django_project(fileName) and TEMPLATE_RE.match(
+        if self._is_django_project(fileName) and TEMPLATE_RE.findall(
                 self.locator.get_service("editor").get_text()):
             return True
 
