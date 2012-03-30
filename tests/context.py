@@ -91,7 +91,8 @@ class ContextTest(TestCase):
         vars = context.get_context(t)
         self.assertEqual(
             vars,
-            ["dictionary.items", "dictionary.items.0.0.attribute", "dictionary.items.0.1"]
+            ["dictionary.items", "dictionary.items.0.0.attribute",
+            "dictionary.items.0.1"]
         )
 
     def test_if(self):

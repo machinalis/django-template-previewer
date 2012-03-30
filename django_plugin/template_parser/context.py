@@ -158,5 +158,3 @@ def get_context(template):
         result += _get_node_context(node)
 
     return result
-
-

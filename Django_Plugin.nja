@@ -1,6 +1,6 @@
 {
   "mainFile": "", 
-  "venv": "", 
+  "venv": "/home/francis/Develop/hobby/ninja/virtualninja/bin/python", 
   "name": "Django Plugin", 
   "license": "GNU General Public License v3", 
   "url": "", 
