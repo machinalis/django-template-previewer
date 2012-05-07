@@ -4,6 +4,10 @@ import os.path
 from django.conf import settings
 from django.utils.importlib import import_module
 
+cwd = os.path.abspath(__file__)
+plugin_base = os.path.join(os.path.dirname(cwd), os.pardir)
+sys.path.append(os.path.normpath(plugin_base))
+
 # Parse command line
 
 path = sys.argv[1]
