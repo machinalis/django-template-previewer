@@ -1,0 +1,11 @@
+<html>
+    <body>
+        <h1>Preview</h1>
+        <form method="post" action="{{ render_url }}">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit">
+        </form>
+    </body>
+</html>
+
