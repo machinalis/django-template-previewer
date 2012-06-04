@@ -1,8 +1,0 @@
-{
-  "module": "django_plugin",
-  "class": "DjangoPluginMain",
-  "authors": "Horacio Duran <hduran@machinalis,com>, Daniel Moisset <dmoisset@machinalis.com>",
-  "version": "0.1",
-  "url": "https://github.com/machinalis/ninja-django-plugin",
-  "description": "A plugin to extend django support in ninja"
-}
