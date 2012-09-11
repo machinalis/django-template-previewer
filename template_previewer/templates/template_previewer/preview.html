@@ -1,4 +1,19 @@
+{% load staticfiles %}
 <html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/template_previewer/preview.css' %}" >
+
+        <script type="text/javascript" src="{% static 'js/jquery-1.8.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery.json-2.3.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/dust-core-0.3.0.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/template_previewer/context.dust.js' %}"></script>
+        <script type="text/javascript">
+            var parse_url = "{% filter escapejs %}{% url parse %}{% endfilter %}";
+        </script>
+        <script type="text/javascript" src="{% static 'js/template_previewer/previewer.js' %}"></script>
+    </head>
     <body>
         <h1>Preview</h1>
         <form method="post" action="{{ render_url }}" target="content-preview">
@@ -6,8 +21,13 @@
             {{ form }}
             <input type="submit">
         </form>
+        <h1>Context</h1>
+        <p><a id="get-context" href="#">Get it!</a></p>
+        <div id="context-tree"></div>
+        <p><a id="send-context" href="#">Send context</a></p>
+        <div id="context-json"></div>
         <h2>This is how it looks:</h2>
-        <iframe name="content-preview" sandbox="allow-scripts">
+        <iframe id="content-preview" name="content-preview" sandbox="allow-scripts">
         </iframe>
     </body>
 </html>

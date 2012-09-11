@@ -5,5 +5,5 @@ class ParseForm(forms.Form):
 
 class RenderForm(forms.Form):
     template = forms.CharField()
-    context = forms.CharField()
+    context = forms.CharField(widget=forms.HiddenInput)
 

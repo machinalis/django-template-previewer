@@ -53,7 +53,8 @@ def _get_node_context(node):
         for expr in node.vars:
             result += _get_vars(expr)
     elif isinstance(node, IfNode):
-        result = _get_expression_vars(node.var)
+        for cond, subnode in node.conditions_nodelists:
+            result += _get_expression_vars(cond)
     elif isinstance(node, IfChangedNode):
         for var in node._varlist:
             result += _get_vars(var)
@@ -78,11 +79,11 @@ def _get_node_context(node):
                  _get_vars(node.max_width)
     # Loading of another templates
     elif isinstance(node, ExtendsNode):
-        if not node.parent_name_expr:
-            # The included template is fixed. If it were dynamic there'd be
-            # nothing more we can do
-            parent = get_template(node.parent_name)
+        if not hasattr(node.parent_name, 'var'): # literal
+            parent = get_template(node.parent_name.literal)
             result += get_context(parent)
+        if node.parent_name:
+            result += _get_vars(node.parent_name)
     # Tags that introduce aliases to existing vars
     elif isinstance(node, ForNode):
         result = _get_vars(node.sequence)

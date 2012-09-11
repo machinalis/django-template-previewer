@@ -1,0 +1,44 @@
+ul {
+    padding-left: 20px;
+}
+li {
+    list-style-type: none;
+    clear: both;
+    line-height: 25px;
+}
+li.collapsed:before {
+    content: "▸ ";
+    cursor: default;
+    margin-left: -0.8em;
+}
+li.uncollapsed:before {
+    content: "▾ ";
+    cursor: default;
+    margin-left: -0.8em;
+}
+li.collapsed ul {
+    display: none;
+}
+
+li input {
+    float: right;
+    width: 130px;
+}
+label {
+    font-family: "monospace";
+    font-size: 14px;
+}
+.even {
+    background-color: #ffffff;
+}
+.odd {
+    background-color: #e8e8e8;
+}
+#context-tree {
+    width: 350px;
+}
+#content-preview {
+    width: 800px;
+    height: 600px;
+}
+

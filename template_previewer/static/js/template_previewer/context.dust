@@ -1,0 +1,11 @@
+<?children>
+    <ul>
+        {#children}
+            <li class="{.|evenodd}{?children} uncollapsed{/children}">
+                <label>{name}</label> <input name="{name}" type="text">
+                {>context/}
+            </li>
+        {/children}
+    </ul>
+</children>
+
