@@ -44,6 +44,7 @@ class ContextItem(object):
     def __float__(self):
         return float(self._str)
 
+
 @require_POST
 def render(request):
     """This is the actually preview, rendered on an <iframe>"""
