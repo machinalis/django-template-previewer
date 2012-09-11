@@ -15,18 +15,18 @@
         <script type="text/javascript" src="{% static 'js/template_previewer/previewer.js' %}"></script>
     </head>
     <body>
-        <h1>Preview</h1>
-        <form method="post" action="{{ render_url }}" target="content-preview">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit">
-        </form>
-        <h1>Context</h1>
-        <p><a id="get-context" href="#">Get it!</a></p>
-        <div id="context-tree"></div>
-        <p><a id="send-context" href="#">Send context</a></p>
-        <div id="context-json"></div>
-        <h2>This is how it looks:</h2>
+        <div id="preview-ui">
+            <p id="hide-preview"><a href="#">Template previewer ▾</a></p>
+            <form method="post" action="{{ render_url }}" target="content-preview">
+                {% csrf_token %}
+                {{ form }}
+                <button id="get-context" href="#">Update context</button><input type="submit" id="preview-submit" value="Preview">
+            </form>
+            <div id="context-tree">
+                <p class="help">Enter a template name and click on "Update context"</p>
+            </div>
+        </div>
+        <p id="show-preview"><a href="#">Template previewer ▸</a></p>
         <iframe id="content-preview" name="content-preview" sandbox="allow-scripts">
         </iframe>
     </body>

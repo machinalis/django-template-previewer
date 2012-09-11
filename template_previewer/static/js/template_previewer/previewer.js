@@ -83,15 +83,35 @@ function buildContext(elem, data) {
 }
 
 function sendContext() {
-    /* send user defined context (JSONified) */
+    /* JSONify user defined context */
     var data = {};
+    /* DOM -> object */
     buildContext($("#context-tree > ul"), data);
+    /* Object -> JSON stored in a hidden input */
     $("#id_context").val($.toJSON(data));
+    /* Proceed with form submit */
+    return true;
 }
 
 $(function () {
-    /* Bind UI elements*/
+    /* Bind UI elements */
     $("#get-context").click(getContext);
-    $("#send-context").click(sendContext);
+    $("#preview-submit").click(sendContext);
+    $("#hide-preview").click(function () {$("#preview-ui").toggle();});
+    $("#show-preview").click(function () {$("#preview-ui").toggle();});
+
+    /* If the template name is updated, the list of context vars must be
+     * updated too. So show only the update button but not the preview button
+     */
+    $("#preview-submit").hide();
+    $("#id_template").change(function () {
+        $("#get-context").show();
+        $("#preview-submit").hide();
+    })
+    /* Once we get the context, hide the button, show the preview one */
+    $("#get-context").click(function () {
+        $("#get-context").hide();
+        $("#preview-submit").show();
+    });
 });
 
