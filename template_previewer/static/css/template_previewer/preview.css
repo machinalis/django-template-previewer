@@ -1,44 +1,44 @@
-ul {
+#context-tree ul {
     padding-left: 20px;
 }
-li {
+#context-tree li {
     list-style-type: none;
     clear: both;
     line-height: 25px;
 }
-li.collapsed:before {
+#context-tree li.collapsed:before {
     content: "▸ ";
     cursor: default;
     margin-left: -0.8em;
 }
-li.uncollapsed:before {
+#context-tree li.uncollapsed:before {
     content: "▾ ";
     cursor: default;
     margin-left: -0.8em;
 }
-li.collapsed ul {
+#context-tree li.collapsed ul {
     display: none;
 }
 
-li input {
+#context-tree li input {
     float: right;
     width: 130px;
 }
-label {
+#context-tree label {
     font-family: "monospace";
     font-size: 14px;
 }
-.even {
+#context-tree .even {
     background-color: #ffffff;
 }
-.odd {
+#context-tree .odd {
     background-color: #e8e8e8;
 }
 #context-tree {
     width: 350px;
 }
 #content-preview {
-    width: 800px;
+    width: 100%;
     height: 600px;
 }
 
