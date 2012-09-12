@@ -1,0 +1,6 @@
+include README.md
+include LICENSE
+recursive-include doc *.png *.md *.txt
+recursive-include template_previewer/static *.css *.js
+recursive-include template_previewer/templates *.html
+
