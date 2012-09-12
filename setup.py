@@ -6,7 +6,6 @@ with open('README.md') as readme:
 setup(
     name='django-template-previewer',
     version='0.1',
-    py_modules=['template_previewer'],
     description=u'A Django app to allow developers preview templates',
     long_description=__doc__,
     author=u'Daniel F. Moisset',
