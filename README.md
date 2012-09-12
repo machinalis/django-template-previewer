@@ -11,7 +11,7 @@ having to modify code, or generate custom data.
 Installation
 ============
 
-You can install as any standard python package, from zipfile or pypi:
+You can install as any standard python package, from zip file or pypi:
 
     pip install django-template-previewer
 
@@ -43,6 +43,8 @@ No syncdb/migration is required; this application does not use the database.
 
 The app assumes you are using Django's app template loader and app staticfile
 finder. Otherwise, its views won't work properly.
+
+Note that you require Django 1.4
 
 Usage
 =====
