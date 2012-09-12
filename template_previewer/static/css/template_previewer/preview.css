@@ -25,13 +25,9 @@ body {
     cursor: default;
     margin-left: -0.8em;
 }
-#context-tree li.collapsed ul {
-    display: none;
-}
-
 #context-tree li input {
     float: right;
-    width: 130px;
+    width: 180px;
 }
 #context-tree label {
     font-family: "monospace";

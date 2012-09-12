@@ -18,6 +18,7 @@ dust.filters.evenodd = function(body) {
 function toggleCollapsed() {
     /* Toggles collapsed/uncollapsed CSS class on the parent of $(this) */
     var listItem = $(this).parent();
+    listItem.children("ul").slideToggle();
     if (listItem.hasClass("uncollapsed")) {
         listItem.removeClass("uncollapsed");
         listItem.addClass("collapsed");
@@ -45,7 +46,9 @@ function showContext(data) {
         $(function () {
             $("li > label").click(toggleCollapsed);
         });
-
+        /* Once we get the context, hide the button, show the preview one */
+        $("#get-context").hide();
+        $("#preview-submit").show();
     }
 }
 function getContext() {
@@ -97,8 +100,9 @@ $(function () {
     /* Bind UI elements */
     $("#get-context").click(getContext);
     $("#preview-submit").click(sendContext);
-    $("#hide-preview").click(function () {$("#preview-ui").toggle();});
-    $("#show-preview").click(function () {$("#preview-ui").toggle();});
+    var togglePreview = function () {$("#preview-ui").fadeToggle();};
+    $("#hide-preview").click(togglePreview);
+    $("#show-preview").click(togglePreview);
 
     /* If the template name is updated, the list of context vars must be
      * updated too. So show only the update button but not the preview button
@@ -108,10 +112,5 @@ $(function () {
         $("#get-context").show();
         $("#preview-submit").hide();
     })
-    /* Once we get the context, hide the button, show the preview one */
-    $("#get-context").click(function () {
-        $("#get-context").hide();
-        $("#preview-submit").show();
-    });
 });
 
