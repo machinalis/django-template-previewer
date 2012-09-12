@@ -11,7 +11,7 @@ setup(
     author=u'Daniel F. Moisset',
     author_email='dmoisset@machinalis.com',
     url='https://github.com/machinalis/django-template-previewer',
-    packages=['template_previewer'],
+    packages=['template_previewer', 'template_previewer.template_parser'],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
