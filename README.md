@@ -54,6 +54,8 @@ are using the standard django development server locally
 
 You should see something similar to:
 
+![Screenshot](https://raw.github.com/machinalis/django-template-previewer/master/doc/ss-initial.png)
+
 The lower box is an html `iframe` where the preview will be shown. The template
 previewer UI can be folded/unfolded by clicking on its title.
 
@@ -77,9 +79,15 @@ For example, assuming we have the following template calles `sample.html`:
 
 You'll get something like:
 
+![Screenshot](https://raw.github.com/machinalis/django-template-previewer/master/doc/ss-with-context.png)
+
 There you can fill up some values, and click on Preview, getting the following:
 
+![Screenshot](https://raw.github.com/machinalis/django-template-previewer/master/doc/ss-with-preview.png)
+
 or, hiding the previewer UI:
+
+![Screenshot](https://raw.github.com/machinalis/django-template-previewer/master/doc/ss-full-preview.png)
 
 That's essentially all there is to it. You can keep editing the context and 
 refreshing the preview. If you are using the development server, updating the
