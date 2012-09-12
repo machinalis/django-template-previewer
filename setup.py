@@ -13,6 +13,14 @@ setup(
     url='https://github.com/machinalis/django-template-previewer',
     packages=['template_previewer', 'template_previewer.template_parser'],
     include_package_data=True,
+    package_data = {
+        "template_previewer": [
+            "templates/template_previewer/*.html",
+            "static/css/template_previewer/*.css",
+            "static/js/template_previewer/*.js",
+            "static/js/*.js",
+        ]
+    },    zip_safe=False,
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
